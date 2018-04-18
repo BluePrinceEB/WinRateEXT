@@ -3,11 +3,11 @@
 		{
 			champions = 
 				{
-					"twitch"
+		
 				},
 
 			utilities = 
 				{
-					
+					"changelog"
 				}
 		}
