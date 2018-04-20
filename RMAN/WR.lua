@@ -26,6 +26,7 @@
     local common_path        = COMMON_PATH  
     local open               = io.open   
     local seed               = math.randomseed(os.time())
+    local concat             = table.concat
 
     local wr_script_data     = "wr_script_data.lua"
     local wr_module_data     = "wr_module_data.lua"
@@ -37,7 +38,7 @@
     local wr_core_url        = "https://raw.githubusercontent.com/HiImWeedle/GoS/master/WinRate/winrate_core.lua"
     local wr_champ_url       = "https://raw.githubusercontent.com/HiImWeedle/GoS/master/WinRate/Modules/winrate_"..char_name:lower()..".lua"
     local wr_icon_url        = "https://raw.githubusercontent.com/HiImWeedle/GoS/master/WinRate/Logo/wr_logo_"..tostring(math.random(1,7))..".png"
-    local wr_menu            = MenuElement({id = "wr_menu_"..char_name, name = "Project WinRate | "..char_name, type = MENU, leftIcon = wr_icon_url})
+    
     
     --WR--
 
@@ -115,14 +116,44 @@
         end
     end
 
+    local function readAll(file)
+        local f = assert(open(file, "r"))
+        local content = f:read("*all")
+        f:close()
+        return content
+    end
+
+    local function clearModule()
+        local f = assert(open(COMMON_PATH.."\\WinRate\\activeModule.lua", "w"))
+        f:write()
+        f:close()        
+    end
+
+    local function appendModule(content)
+        local f = assert(open(COMMON_PATH.."\\WinRate\\activeModule.lua", "a"))
+        local content = f:write(content)
+        f:close()        
+    end
+
+    local function LoadWR()
+        local path, ending = COMMON_PATH.."\\WinRate\\", ".lua"
+        local dependencies = {"menuLoad", "commonLib", "callbacks", "prediction", "\\Champion Modules\\WR_"..char_name} 
+        clearModule()
+        for i=1, #dependencies do
+            local dependency = readAll(concat({path, dependencies[i], ending}))
+            appendModule(dependency)    
+        end                          
+        dofile(path.."activeModule"..ending) 
+    end
+
     --WR--
 
     function OnLoad()
-        AutoUpdate()
-        _G.script_data = script_data
-        _G.isSupported = isSupported
-        _G.isUpdated, _G.timeCheck = isUpdated, timeCheck        
-        _G.wr_menu = wr_menu 
-        require("wr_changelog")
+        --AutoUpdate()
+        --_G.script_data = script_data
+        --_G.isSupported = isSupported
+        --_G.isUpdated, _G.timeCheck = isUpdated, timeCheck       
+        --require("wr_changelog")
+        LoadWR()
     --  require("wr_core") 
     end    

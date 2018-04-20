@@ -50,8 +50,8 @@
             local startPos = Vector(pathData.startPos)
             local endPos = Vector(pathData.endPos)
             local dashSpeed = pathData.dashSpeed
-            local timer = GameTimer()
-            local startT = timer - Game.Latency()/2000
+            local timer = Timer()
+            local startT = timer - Latency()/2000
             local dashDist = GetDistance(startPos, endPos)
             local endT = startT + (dashDist/dashSpeed)
             --
@@ -83,7 +83,7 @@
             local buff = unit:GetBuff(i)
             if buff.duration > 0 then
                 local ExtraDelay = speed == huge and 0 or (GetDistance(from, unit.pos) / speed)
-                if buff.expireTime + (radius / unit.ms) > GameTimer() + delay + ExtraDelay then
+                if buff.expireTime + (radius / unit.ms) > Timer() + delay + ExtraDelay then
                     debuff[buff.type] = true
                 end
             end
@@ -99,8 +99,8 @@
         local delay, speed, from = spell.Delay, spell.Speed, spell.From.pos
         for i = 1, unit.buffCount do
             local buff = unit:GetBuff(i)
-            if buff.type == _SLOW and buff.expireTime >= GameTimer() and buff.duration > 0 then
-                if buff.expireTime > GameTimer() + delay + GetDistance(unit.pos, from) / speed then
+            if buff.type == _SLOW and buff.expireTime >= Timer() and buff.duration > 0 then
+                if buff.expireTime > Timer() + delay + GetDistance(unit.pos, from) / speed then
                     return true
                 end
             end
@@ -177,7 +177,7 @@
         local radius = spell.Radius == 0 and 1 or (spell.Radius + unit.boundingRadius) - 4
         local speed = spell.Speed or huge
         local from = spell.From or myHero
-        local delay = spell.Delay + (0.07 + Game.Latency() / 2000)
+        local delay = spell.Delay + (0.07 + Latency() / 2000)
         local collision = spell.Collision or false
         --
         local Position, CastPosition, HitChance = Vector(unit), Vector(unit), 0
@@ -226,3 +226,5 @@
         
         return Position, CastPosition, HitChance
     end
+
+    print("[WR] Prediction Loaded")

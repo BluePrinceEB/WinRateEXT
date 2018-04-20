@@ -17,8 +17,8 @@
     end    
 
     function BuffExplorer:Tick() -- We can easily get rid of the pairs loops 
-        for i = 1, GameHeroCount() do
-            local hero = GameHero(i)
+        for i = 1, HeroCount() do
+            local hero = Hero(i)
             if not self.Heroes[hero] and not self.Buffs[hero.networkID] then
                 insert(self.Heroes, hero)
                 self.Buffs[hero.networkID] = {}
@@ -44,7 +44,7 @@
             for i=1, #self.Heroes do
                 local hero = self.Heroes[i]
                 for buffname,buffinfo in pairs(self.Buffs[hero.networkID]) do
-                    if buffinfo.expireTime < GameTimer() then
+                    if buffinfo.expireTime < Timer() then
                         for i, cb in pairs(self.UpdateBuffCallback) do
                             cb(hero,buffinfo.buff)
                         end
@@ -56,7 +56,7 @@
     end
     
     function BuffExplorer:Valid(buff)
-        return buff and buff.name and #buff.name > 0 and buff.startTime <= GameTimer() and buff.expireTime > GameTimer()
+        return buff and buff.name and #buff.name > 0 and buff.startTime <= Timer() and buff.expireTime > Timer()
     end
 
     class("Animation")
@@ -69,8 +69,8 @@
     
     function Animation:Tick()
         if self.OnAnimationCallback ~= {} then
-            for i = 1, GameHeroCount() do
-                local hero = GameHero(i)
+            for i = 1, HeroCount() do
+                local hero = Hero(i)
                 local netID = hero.networkID            
                 if hero.activeSpellSlot then
                     if not _ANIMATION_TABLE[netID] and hero.charName ~= "" then
@@ -98,10 +98,10 @@
     end
     
     function Vision:Tick()
-        local heroCount = GameHeroCount()  
+        local heroCount = HeroCount()  
         --if heroCount <= 0 then return end  
         for i = 1, heroCount do        
-            local hero = GameHero(i)
+            local hero = Hero(i)
             if hero then
                 local netID = hero.networkID
                 if not _VISION_TABLE[netID] then
@@ -138,8 +138,8 @@
     
     function Path:Tick()
         if self.OnNewPathCallback ~= {} or self.OnDashCallback ~= {} then
-            for i = 1, GameHeroCount() do
-                local hero = GameHero(i)
+            for i = 1, HeroCount() do
+                local hero = Hero(i)
                 self:OnPath(hero)           
             end
         end
@@ -150,7 +150,7 @@
             _PATH_TABLE[unit.networkID] = {
                 pos = unit.posTo,
                 speed = unit.ms,
-                time = GameTimer()
+                time = Timer()
             }
         end
     
@@ -165,7 +165,7 @@
                 startPos = unit.pos,
                 pos = unit.posTo ,
                 speed = unit.ms,
-                time = GameTimer()
+                time = Timer()
             }
                 --
             for k, cb in pairs(self.OnNewPathCallback) do
@@ -185,8 +185,8 @@
     function LevelUp:__init()
         _G._LEVEL_UP_START = true
         self.OnLevelUpCallback = {}
-        for _ = 1, GameHeroCount() do
-            local obj = GameHero(_)
+        for _ = 1, HeroCount() do
+            local obj = Hero(_)
             if obj then
                 _LEVEL_UP_TABLE[obj.networkID] = {level = obj.levelData.lvl == 1 and 0 or obj.levelData.lvl}
             end
@@ -196,8 +196,8 @@
     
     function LevelUp:Tick()
         if self.OnLevelUpCallback ~= {} then
-            for i = 1, GameHeroCount() do
-                local hero = GameHero(i)
+            for i = 1, HeroCount() do
+                local hero = Hero(i)
                 local level = hero.levelData.lvl
                 local netID = hero.networkID
                 if not _LEVEL_UP_TABLE[netID] then 
@@ -301,7 +301,7 @@
             local enemy = enemies[i]
             if enemy and enemy.activeSpell and enemy.activeSpell.valid then
                 local spell = enemy.activeSpell
-                if self.spells[spell.name] and self.menu and self.menu[spell.name] and self.menu[spell.name]:Value() and spell.isChanneling and spell.castEndTime - GameTimer() > 0 then
+                if self.spells[spell.name] and self.menu and self.menu[spell.name] and self.menu[spell.name]:Value() and spell.isChanneling and spell.castEndTime - Timer() > 0 then
                     for i, Emit in pairs(self.InterruptCallback) do
                         Emit(enemy, spell)
                     end
@@ -311,89 +311,89 @@
     end    
     
     --------------------------------------
-    function OnInterruptable(fn)
+    local function OnInterruptable(fn)
         if not _INTERRUPTER_START then  
             _G.Interrupter = Interrupter()
-            print("*** Callbacks | Interrupter | Loaded.")
+            print("[WR] Callbacks | Interrupter Loaded.")
         end
         insert(Interrupter.InterruptCallback, fn)
     end
-    function OnLevelUp(fn)
+    local function OnLevelUp(fn)
         if not _LEVEL_UP_START then  
             _G.LevelUp = LevelUp()
-            print("*** Callbacks | Level Up | Loaded.")
+            print("[WR] Callbacks | Level Up Loaded.")
         end
         insert(LevelUp.OnLevelUpCallback, fn)
     end
     
-    function OnNewPath(fn)
+    local function OnNewPath(fn)
         if not _PATH_STARTED then  
             _G.Path = Path()
-            print("*** Callbacks | Pathing | Loaded.")
+            print("[WR] Callbacks | Pathing Loaded.")
         end
         insert(Path.OnNewPathCallback, fn)
     end
     
-    function OnDash(fn)
+    local function OnDash(fn)
         if not _PATH_STARTED then  
            _G.Path = Path()
-           print("*** Callbacks | Pathing | Loaded.")
+           print("[WR] Callbacks | Pathing Loaded.")
         end
         insert(Path.OnDashCallback, fn)
     end
     
-    function OnGainVision(fn)
+    local function OnGainVision(fn)
         if not _VISION_STARTED then  
            _G.Vision = Vision()
-           print("*** Callbacks | Vision | Loaded.")
+           print("[WR] Callbacks | Vision Loaded.")
         end
         insert(Vision.GainVisionCallback, fn)
     end
     
-    function OnLoseVision(fn)
+    local function OnLoseVision(fn)
         if not _VISION_STARTED then  
             _G.Vision = Vision()
-            print("*** Callbacks | Vision | Loaded.")
+            print("[WR] Callbacks | Vision Loaded.")
         end
         insert(Vision.LoseVisionCallback, fn)
     end
     
-    function OnAnimation(fn)
+    local function OnAnimation(fn)
         if not _ANIMATION_STARTED then  
             _G.Animation = Animation()
-            print("*** Callbacks | Animation | Loaded.")
+            print("[WR] Callbacks | Animation Loaded.")
         end
         insert(Animation.OnAnimationCallback, fn)
     end
     
-    function OnUpdateBuff(cb)
+    local function OnUpdateBuff(cb)
         if not __BuffExplorer_Loaded then   
             _G.BuffExplorer = BuffExplorer()
-            print("*** Callbacks | Buff Explorer | Loaded.") 
+            print("[WR] Callbacks | Buff Explorer Loaded.") 
         end
         insert(BuffExplorer.UpdateBuffCallback,cb)
     end
     
-    function OnRemoveBuff(cb)
+    local function OnRemoveBuff(cb)
         if not __BuffExplorer_Loaded then   
             _G.BuffExplorer = BuffExplorer()
-            print("*** Callbacks | Buff Explorer | Loaded.") 
+            print("[WR] Callbacks | Buff Explorer Loaded.") 
         end
         insert(BuffExplorer.RemoveBuffCallback,cb)
     end
     
-    function OnBuyItem(fn)
+    local function OnBuyItem(fn)
         if not _ITEM_CHECKER_STARTED then  
             _G.ItemEvents = ItemEvents()
-            print("*** Callbacks | Item Events | Loaded.")
+            print("[WR] Callbacks | Item Events Loaded.")
         end
         insert(ItemEvents.BuyItemCallback, fn)
     end
     
-    function OnSellItem(fn)
+    local function OnSellItem(fn)
         if not _ITEM_CHECKER_STARTED then  
             _G.ItemEvents = ItemEvents()
-            print("*** Callbacks | Item Events | Loaded.")
+            print("[WR] Callbacks | Item Events Loaded.")
         end
         insert(ItemEvents.SellItemCallback, fn)
     end

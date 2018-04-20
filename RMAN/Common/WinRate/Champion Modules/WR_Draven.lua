@@ -1,29 +1,3 @@
-    local char_name, summoner_name, myId = myHero.charName, myHero.name, myHero.networkID
-    --
-    local huge, pi, floor, ceil, sqrt, max, min = math.huge, math.pi, math.floor, math.ceil, math.sqrt, math.max, math.min 
-    --
-    local lenghtOf, abs, deg, cos, sin, acos, atan = math.lenghtOf, math.abs, math.deg, math.cos, math.sin, math.acos, math.atan 
-    --
-    local contains, insert, remove, sort = table.contains, table.insert, table.remove, table.sort
-    --
-    local TEAM_JUNGLE, TEAM_ALLY, TEAM_ENEMY = 300, myHero.team, 300 - myHero.team
-    --
-    local _STUN, _TAUNT, _SLOW, _SNARE, _FEAR, _CHARM, _SUPRESS, _KNOCKUP, _KNOCKBACK = 5, 8, 10, 11, 21, 22, 24, 29, 30
-    --
-    local Vector, KeyDown, KeyUp    = Vector, Control.KeyDown, Control.KeyUp
-    --
-    local DrawCircle, DrawLine, DrawColor, DrawText = Draw.Circle, Draw.Line, Draw.Color, Draw.Text
-    --
-    local barHeight, barWidth, barYOffset = 8, 103, -8
-    --
-    local Timer                   = Game.Timer
-    local Hero, HeroCount         = Game.Hero, Game.HeroCount
-    local Ward, WardCount         = Game.Ward, Game.WardCount
-    local Minion, MinionCount     = Game.Minion, Game.MinionCount    
-    local Turret, TurretCount     = Game.Turret, Game.TurretCount
-    local Object, ObjectCount     = Game.Object, Game.ObjectCount
-    local Missile, MissileCount   = Game.Missile, Game.MissileCount
-    local Particle, ParticleCount = Game.Particle, Game.ParticleCount
 
     class 'Draven'  
 
